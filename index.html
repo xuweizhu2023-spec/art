@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Xuwei Art | Calligraphie Paris</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@300;500;700&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+    
+    <style>
+        /* --- RESET & BASE STYLES --- */
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        body {
+            font-family: 'Playfair Display', serif;
+            color: #333;
+            overflow: hidden; 
+            height: 100vh;
+            width: 100vw;
+            background-color: #111;
+            
+            /* --- GESTION DU FOND (AMÉLIORÉE) --- */
+            background-image: url('background.jpg'); 
+            background-size: cover;       /* Couvre tout l'écran */
+            background-position: center;  /* Centré */
+            background-repeat: no-repeat;
+            
+            /* Astuce pour améliorer la netteté perçue */
+            image-rendering: -webkit-optimize-contrast; 
+        }
+
+        /* Petit voile noir pour faire ressortir les cadres et masquer le flou du fond */
+        body::after {
+            content: "";
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.2); /* 20% de noir par dessus l'image */
+            pointer-events: none; /* Laisse passer la souris */
+            z-index: -1;
+        }
+
+        /* --- CONTAINER PRINCIPAL --- */
+        .main-container {
+            display: flex;
+            align-items: center; 
+            overflow-x: hidden; 
+            overflow-y: hidden;
+            height: 100%;
+            width: 100%;
+            position: relative;
+        }
+
+        /* --- PANELS (CARTES FLOTTANTES) --- */
+        .panel {
+            flex-shrink: 0; 
+            /* HAUTEUR DYNAMIQUE : 
+               Prend 80% de la hauteur de l'écran, mais jamais moins de 500px (pour pas écraser le contenu) 
+               et jamais plus que l'écran lui-même */
+            height: 80vh; 
+            min-height: 500px;
+            max-height: 95vh;
+            
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 4vmin; /* Padding qui s'adapte à la taille de l'écran */
+            position: relative;
+            
+            background: rgba(244, 241, 234, 0.94); /* Un peu plus opaque pour la lisibilité */
+            backdrop-filter: blur(8px); /* Floute le fond derrière le panneau */
+            box-shadow: 0 15px 50px rgba(0,0,0,0.3);
+            border-radius: 4px; /* Coins très légèrement adoucis */
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+
+        /* Largeurs Desktop "Intelligentes" */
+        @media (min-width: 768px) {
+            .panel { width: 50vw; max-width: 800px; } /* Ne devient jamais trop large */
+            .panel.intro { width: 45vw; max-width: 600px; }
+            .panel.wide { width: 75vw; max-width: 1200px; }
+            
+            .panel:first-child { margin-left: 5vw; } 
+            .panel:last-child { margin-right: 5vw; }
+        }
+
+        /* --- TYPOGRAPHY --- */
+        h1 { font-size: clamp(2rem, 5vw, 3.5rem); margin-bottom: 0.5rem; color: #000; } /* Taille de police dynamique */
+        h2 { font-size: 1.2rem; color: #8c2a2a; margin-bottom: 1.5rem; text-transform: uppercase; letter-spacing: 3px; border-bottom: 2px solid #8c2a2a; display: inline-block; padding-bottom: 5px;}
+        
+        p.fr { 
+            font-family: 'Helvetica Neue', sans-serif; 
+            line-height: 1.6; margin-bottom: 1rem; 
+            font-size: clamp(0.9rem, 1.5vw, 1.05rem); /* Police qui s'adapte */
+            color: #222;
+        }
+        p.en {
+            font-family: 'Playfair Display', serif; font-style: italic; 
+            font-size: clamp(0.85rem, 1.4vw, 1rem); 
+            color: #666; margin-bottom: 1.5rem; line-height: 1.5;
+        }
+        .chinese-text { font-family: 'Noto Serif SC', serif; }
+
+        .intro-content { width: 100%; margin: 0 auto; }
+
+        /* --- GALERIE DYNAMIQUE --- */
+        .gallery-grid {
+            display: flex;
+            gap: 20px;
+            /* La grille prend toute la place disponible dans le panneau, moins le titre */
+            flex: 1; 
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            height: 100%;
+            overflow: hidden; /* Empêche le dépassement */
+        }
+        
+        .art-card {
+            /* Flexibilité totale : la carte essaie de prendre de la place mais peut rétrécir */
+            flex: 0 1 auto; 
+            height: 100%; /* Essaie de prendre toute la hauteur */
+            max-height: 65vh; /* Mais pas plus que 65% de l'écran pour garder l'harmonie */
+            
+            background: #fff;
+            padding: 10px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+            transition: transform 0.4s ease;
+            
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+        .art-card:hover { transform: translateY(-5px); }
+        
+        /* IMAGE RESPONSIVE MAGIQUE */
+        .art-card img {
+            width: 100%;
+            height: auto;
+            max-height: 85%; /* Laisse 15% pour le texte en bas */
+            object-fit: contain; /* L'image est redimensionnée pour ENTRER dans la boîte sans être coupée */
+            display: block;
+            margin: 0 auto;
+            pointer-events: none;
+        }
+        
+        .caption {
+            height: 15%;
+            min-height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            text-align: center;
+            padding-top: 5px;
+        }
+        .caption h3 { font-size: clamp(0.8rem, 1.2vw, 1rem); margin: 0; color: #333; margin-bottom: 2px;}
+        .caption span { font-size: 0.75rem; color: #888; font-family: 'Helvetica Neue', sans-serif;}
+
+        /* --- CONTACT --- */
+        .contact-box {
+            background: white;
+            padding: 40px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            text-align: center;
+            width: 100%;
+            border: 1px solid #ddd;
+        }
+        .btn {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 12px 30px;
+            background-color: #1a1a1a;
+            color: #fff;
+            text-decoration: none;
+            letter-spacing: 1px;
+            transition: background 0.3s;
+        }
+        .btn:hover { background-color: #8c2a2a; }
+
+        /* --- MOBILE --- */
+        @media (max-width: 768px) {
+            body { overflow: auto; height: auto; }
+            .main-container { flex-direction: column; overflow-x: hidden; overflow-y: auto; height: auto; display: block; }
+            
+            /* Sur mobile, on remplit l'écran */
+            .panel { 
+                width: 100vw; 
+                height: auto; 
+                min-height: 100vh;
+                margin: 0; 
+                padding: 30px;
+                border-bottom: 1px solid rgba(0,0,0,0.1);
+                border-radius: 0;
+            }
+            
+            /* Sur mobile, on passe les images l'une sous l'autre si besoin ou en scroll horizontal */
+            .gallery-grid { 
+                flex-direction: column; 
+                height: auto; 
+                gap: 40px;
+            }
+            
+            .art-card { 
+                width: 100%; 
+                height: auto; 
+                max-height: none; 
+            }
+            .art-card img {
+                max-height: 50vh; /* Limite la hauteur sur mobile */
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="main-container" id="scroll-container">
+
+        <section class="panel intro">
+            <div class="intro-content">
+                <h1>Xuwei Art</h1>
+                <p style="font-style: italic; color: #8c2a2a; font-size: 0.9rem; margin-top: -5px;">Paris, France</p>
+                <hr style="border: 0; border-top: 1px solid #ddd; margin: 25px 0;">
+                
+                <p class="fr">
+                    <strong>Bonjour, je suis Xuwei.</strong><br>
+                    Artiste calligraphe riche d'une double influence culturelle. Après avoir vécu au Japon, je suis désormais installée à Paris. Pratiquant la calligraphie depuis 9 ans, je suis disponible pour événements & créations artistiques en France.
+                </p>
+
+                <p class="en">
+                    "Hello, I am Xuwei. A calligraphy artist with a multicultural background. Having lived in Japan, I am now based in Paris. Practicing calligraphy for 9 years, I am available for artistic events and creations in France."
+                </p>
+                
+                <br>
+                <a href="#contact" onclick="goToContact()" style="font-size: 0.8rem; text-transform: uppercase; color: #1a1a1a; text-decoration: none; border-bottom: 1px solid #1a1a1a; cursor: pointer;">Me Contacter &rarr;</a>
+            </div>
+        </section>
+
+        <section class="panel wide">
+            <h2>Œuvres / Works</h2>
+            <div class="gallery-grid">
+                
+                <div class="art-card">
+                    <img src="IMG_5678.jpeg" alt="Poème sur l'ascension">
+                    <div class="caption">
+                        <h3>Ascension</h3>
+                        <span>Encre sur papier or</span>
+                    </div>
+                </div>
+
+                <div class="art-card">
+                    <img src="IMG_5686.jpeg" alt="Vent d'Est">
+                    <div class="caption">
+                        <h3>S'élancer au vent</h3>
+                        <span>Marque-page personnalisé</span>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <section class="panel wide">
+            <h2>Détails / Details</h2>
+            <div class="gallery-grid">
+                
+                <div class="art-card">
+                    <img src="IMG_5698.jpeg" alt="Duo de parchemins">
+                    <div class="caption">
+                        <h3>Harmonie</h3>
+                        <span>Duo de poèmes classiques</span>
+                    </div>
+                </div>
+
+                <div class="art-card">
+                    <img src="IMG_5702.jpeg" alt="Détail calligraphie">
+                    <div class="caption">
+                        <h3>Printemps</h3>
+                        <span>Encre deux couleurs</span>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <section class="panel intro contact-section">
+            <div class="contact-box" id="contact">
+                <h2>Contact</h2>
+                <p>Disponible pour collaborations artistiques.<br>Available for commissions.</p>
+                
+                <a href="mailto:xuweizhu2023@gmail.com" class="btn">xuweizhu2023@gmail.com</a>
+                <br><br>
+                <a href="https://www.linkedin.com/in/xuweizhu/" target="_blank" style="color: #0e76a8; text-decoration: none; font-size: 0.9rem;">
+                    LinkedIn Profile
+                </a>
+            </div>
+        </section>
+
+        <div style="width: 10vw; flex-shrink: 0;"></div>
+
+    </div>
+
+    <script>
+        const container = document.getElementById('scroll-container');
+        let currentScroll = 0;
+        let targetScroll = 0;
+        let isAnimating = false;
+        const ease = 0.08; 
+        let maxScroll = container.scrollWidth - window.innerWidth;
+
+        window.addEventListener('resize', () => {
+            maxScroll = container.scrollWidth - window.innerWidth;
+        });
+
+        window.addEventListener('wheel', (e) => {
+            if (window.innerWidth > 768) {
+                e.preventDefault();
+                targetScroll += e.deltaY * 0.7; 
+                targetScroll = Math.max(0, Math.min(targetScroll, maxScroll));
+                if (!isAnimating) {
+                    isAnimating = true;
+                    requestAnimationFrame(animateScroll);
+                }
+            }
+        }, { passive: false });
+
+        function animateScroll() {
+            currentScroll += (targetScroll - currentScroll) * ease;
+            container.scrollLeft = currentScroll;
+            if (Math.abs(targetScroll - currentScroll) > 0.5) {
+                requestAnimationFrame(animateScroll);
+            } else {
+                isAnimating = false;
+            }
+        }
+
+        function goToContact() {
+            if (window.innerWidth > 768) {
+                targetScroll = maxScroll; 
+                if (!isAnimating) {
+                    isAnimating = true;
+                    requestAnimationFrame(animateScroll);
+                }
+            } else {
+                document.getElementById('contact').scrollIntoView({behavior: 'smooth'});
+            }
+        }
+    </script>
+</body>
+</html>
