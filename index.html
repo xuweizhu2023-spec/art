@@ -15,152 +15,181 @@
         body {
             font-family: 'Playfair Display', serif;
             color: #333;
-            overflow: hidden; 
+            overflow: hidden; /* Pas de scrollbar moche sur le body */
             height: 100vh;
             width: 100vw;
             background-color: #111;
             
-            /* --- GESTION DU FOND (AMÉLIORÉE) --- */
+            /* --- FOND D'ÉCRAN --- */
             background-image: url('background.jpg'); 
-            background-size: cover;       /* Couvre tout l'écran */
-            background-position: center;  /* Centré */
+            background-size: cover;       
+            background-position: center;  
             background-repeat: no-repeat;
             
-            /* Astuce pour améliorer la netteté perçue */
+            /* Fixe le fond même sur mobile (support moderne) */
+            background-attachment: fixed; 
+            
             image-rendering: -webkit-optimize-contrast; 
         }
 
-        /* Petit voile noir pour faire ressortir les cadres et masquer le flou du fond */
+        /* Voile noir léger pour le contraste */
         body::after {
             content: "";
             position: absolute;
             top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0, 0, 0, 0.2); /* 20% de noir par dessus l'image */
-            pointer-events: none; /* Laisse passer la souris */
+            background: rgba(0, 0, 0, 0.2); 
+            pointer-events: none; 
             z-index: -1;
         }
 
         /* --- CONTAINER PRINCIPAL --- */
         .main-container {
             display: flex;
-            align-items: center; 
-            overflow-x: hidden; 
-            overflow-y: hidden;
+            align-items: center; /* Centre verticalement */
+            
+            /* Configuration Scroll */
+            overflow-x: auto; /* Scroll horizontal autorisé */
+            overflow-y: hidden; /* Scroll vertical interdit */
             height: 100%;
             width: 100%;
-            position: relative;
+            
+            /* Pour le mobile : effet magnétique */
+            scroll-snap-type: x mandatory; 
+            -webkit-overflow-scrolling: touch; /* Fluidité iOS */
         }
 
-        /* --- PANELS (CARTES FLOTTANTES) --- */
+        /* Cacher la barre de défilement tout en gardant le scroll */
+        .main-container::-webkit-scrollbar { display: none; }
+        .main-container { -ms-overflow-style: none; scrollbar-width: none; }
+
+        /* --- PANELS (CARTES) --- */
         .panel {
             flex-shrink: 0; 
-            /* HAUTEUR DYNAMIQUE : 
-               Prend 80% de la hauteur de l'écran, mais jamais moins de 500px (pour pas écraser le contenu) 
-               et jamais plus que l'écran lui-même */
-            height: 80vh; 
-            min-height: 500px;
-            max-height: 95vh;
-            
             display: flex;
             flex-direction: column;
             justify-content: center;
-            padding: 4vmin; /* Padding qui s'adapte à la taille de l'écran */
             position: relative;
             
-            background: rgba(244, 241, 234, 0.94); /* Un peu plus opaque pour la lisibilité */
-            backdrop-filter: blur(8px); /* Floute le fond derrière le panneau */
-            box-shadow: 0 15px 50px rgba(0,0,0,0.3);
-            border-radius: 4px; /* Coins très légèrement adoucis */
+            background: rgba(244, 241, 234, 0.94); 
+            backdrop-filter: blur(5px); 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            border-radius: 4px; 
             border: 1px solid rgba(255,255,255,0.2);
+            
+            /* Pour l'effet magnétique mobile */
+            scroll-snap-align: center; 
         }
 
-        /* Largeurs Desktop "Intelligentes" */
-        @media (min-width: 768px) {
-            .panel { width: 50vw; max-width: 800px; } /* Ne devient jamais trop large */
-            .panel.intro { width: 45vw; max-width: 600px; }
+        /* --- CONFIGURATION DESKTOP (Ordinateur) --- */
+        @media (min-width: 769px) {
+            .panel { 
+                height: 80vh; 
+                min-height: 500px;
+                padding: 4vmin; 
+                margin-right: 4vw; /* Espace entre les cartes */
+            }
+            .panel.intro { width: 45vw; max-width: 600px; margin-left: 5vw; }
             .panel.wide { width: 75vw; max-width: 1200px; }
+            .panel.contact-section { width: 40vw; margin-right: 5vw; }
             
-            .panel:first-child { margin-left: 5vw; } 
-            .panel:last-child { margin-right: 5vw; }
+            /* Sur desktop, on désactive le snap natif car on a notre script JS fluide */
+            .main-container { scroll-snap-type: none; }
+        }
+
+        /* --- CONFIGURATION MOBILE (iPhone/Android) --- */
+        @media (max-width: 768px) {
+            .main-container {
+                padding-left: 20px; /* Petit espace au début */
+                padding-right: 20px;
+            }
+
+            .panel {
+                /* Taille réduite pour voir le fond en haut et en bas */
+                width: 85vw;  /* La carte prend 85% de la largeur */
+                height: 70vh; /* La carte prend 70% de la hauteur */
+                margin-right: 20px; /* Espace entre les cartes */
+                padding: 25px;
+            }
+            
+            /* Ajustements typographie mobile */
+            h1 { font-size: 2.2rem; }
+            p.fr { font-size: 0.95rem; line-height: 1.5; }
+            p.en { font-size: 0.85rem; }
         }
 
         /* --- TYPOGRAPHY --- */
-        h1 { font-size: clamp(2rem, 5vw, 3.5rem); margin-bottom: 0.5rem; color: #000; } /* Taille de police dynamique */
+        h1 { margin-bottom: 0.5rem; color: #000; }
         h2 { font-size: 1.2rem; color: #8c2a2a; margin-bottom: 1.5rem; text-transform: uppercase; letter-spacing: 3px; border-bottom: 2px solid #8c2a2a; display: inline-block; padding-bottom: 5px;}
         
-        p.fr { 
-            font-family: 'Helvetica Neue', sans-serif; 
-            line-height: 1.6; margin-bottom: 1rem; 
-            font-size: clamp(0.9rem, 1.5vw, 1.05rem); /* Police qui s'adapte */
-            color: #222;
-        }
-        p.en {
-            font-family: 'Playfair Display', serif; font-style: italic; 
-            font-size: clamp(0.85rem, 1.4vw, 1rem); 
-            color: #666; margin-bottom: 1.5rem; line-height: 1.5;
-        }
+        p.fr { font-family: 'Helvetica Neue', sans-serif; color: #222; margin-bottom: 1rem; }
+        p.en { font-family: 'Playfair Display', serif; font-style: italic; color: #666; margin-bottom: 1.5rem; }
         .chinese-text { font-family: 'Noto Serif SC', serif; }
 
         .intro-content { width: 100%; margin: 0 auto; }
 
-        /* --- GALERIE DYNAMIQUE --- */
+        /* --- GALERIE --- */
         .gallery-grid {
             display: flex;
             gap: 20px;
-            /* La grille prend toute la place disponible dans le panneau, moins le titre */
             flex: 1; 
             align-items: center;
             justify-content: center;
             width: 100%;
             height: 100%;
-            overflow: hidden; /* Empêche le dépassement */
+            overflow: hidden; 
         }
         
         .art-card {
-            /* Flexibilité totale : la carte essaie de prendre de la place mais peut rétrécir */
             flex: 0 1 auto; 
-            height: 100%; /* Essaie de prendre toute la hauteur */
-            max-height: 65vh; /* Mais pas plus que 65% de l'écran pour garder l'harmonie */
-            
+            height: 100%; 
+            max-height: 65vh; 
             background: #fff;
-            padding: 10px;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.08);
-            transition: transform 0.4s ease;
-            
+            padding: 8px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
             display: flex;
             flex-direction: column;
             justify-content: space-between;
         }
-        .art-card:hover { transform: translateY(-5px); }
         
-        /* IMAGE RESPONSIVE MAGIQUE */
+        /* Sur mobile, on ajuste la grille pour qu'elle tienne dans la petite carte */
+        @media (max-width: 768px) {
+            .gallery-grid {
+                flex-direction: row; /* Toujours horizontal */
+                overflow-x: auto; /* Scroll dans la carte si besoin */
+                justify-content: flex-start; /* Aligné à gauche */
+                gap: 15px;
+            }
+            .art-card {
+                width: 70%; /* Chaque image prend 70% de la carte */
+                flex-shrink: 0;
+            }
+        }
+
         .art-card img {
             width: 100%;
             height: auto;
-            max-height: 85%; /* Laisse 15% pour le texte en bas */
-            object-fit: contain; /* L'image est redimensionnée pour ENTRER dans la boîte sans être coupée */
+            max-height: 80%; 
+            object-fit: contain; 
             display: block;
             margin: 0 auto;
             pointer-events: none;
         }
         
         .caption {
-            height: 15%;
-            min-height: 40px;
+            height: 20%;
             display: flex;
             align-items: center;
             justify-content: center;
             flex-direction: column;
             text-align: center;
-            padding-top: 5px;
         }
-        .caption h3 { font-size: clamp(0.8rem, 1.2vw, 1rem); margin: 0; color: #333; margin-bottom: 2px;}
-        .caption span { font-size: 0.75rem; color: #888; font-family: 'Helvetica Neue', sans-serif;}
+        .caption h3 { font-size: 0.9rem; margin: 0; color: #333; }
+        .caption span { font-size: 0.7rem; color: #888; font-family: 'Helvetica Neue', sans-serif;}
 
         /* --- CONTACT --- */
         .contact-box {
             background: white;
-            padding: 40px;
+            padding: 30px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.1);
             text-align: center;
             width: 100%;
@@ -168,48 +197,15 @@
         }
         .btn {
             display: inline-block;
-            margin-top: 20px;
-            padding: 12px 30px;
+            margin-top: 15px;
+            padding: 12px 25px;
             background-color: #1a1a1a;
             color: #fff;
             text-decoration: none;
             letter-spacing: 1px;
-            transition: background 0.3s;
+            font-size: 0.9rem;
         }
-        .btn:hover { background-color: #8c2a2a; }
 
-        /* --- MOBILE --- */
-        @media (max-width: 768px) {
-            body { overflow: auto; height: auto; }
-            .main-container { flex-direction: column; overflow-x: hidden; overflow-y: auto; height: auto; display: block; }
-            
-            /* Sur mobile, on remplit l'écran */
-            .panel { 
-                width: 100vw; 
-                height: auto; 
-                min-height: 100vh;
-                margin: 0; 
-                padding: 30px;
-                border-bottom: 1px solid rgba(0,0,0,0.1);
-                border-radius: 0;
-            }
-            
-            /* Sur mobile, on passe les images l'une sous l'autre si besoin ou en scroll horizontal */
-            .gallery-grid { 
-                flex-direction: column; 
-                height: auto; 
-                gap: 40px;
-            }
-            
-            .art-card { 
-                width: 100%; 
-                height: auto; 
-                max-height: none; 
-            }
-            .art-card img {
-                max-height: 50vh; /* Limite la hauteur sur mobile */
-            }
-        }
     </style>
 </head>
 <body>
@@ -220,18 +216,17 @@
             <div class="intro-content">
                 <h1>Xuwei Art</h1>
                 <p style="font-style: italic; color: #8c2a2a; font-size: 0.9rem; margin-top: -5px;">Paris, France</p>
-                <hr style="border: 0; border-top: 1px solid #ddd; margin: 25px 0;">
+                <hr style="border: 0; border-top: 1px solid #ddd; margin: 20px 0;">
                 
                 <p class="fr">
                     <strong>Bonjour, je suis Xuwei.</strong><br>
-                    Artiste calligraphe riche d'une double influence culturelle. Après avoir vécu au Japon, je suis désormais installée à Paris. Pratiquant la calligraphie depuis 9 ans, je suis disponible pour événements & créations artistiques en France.
+                    Artiste calligraphe riche d'une double influence culturelle. Après avoir vécu au Japon, je suis désormais installée à Paris.
                 </p>
 
                 <p class="en">
-                    "Hello, I am Xuwei. A calligraphy artist with a multicultural background. Having lived in Japan, I am now based in Paris. Practicing calligraphy for 9 years, I am available for artistic events and creations in France."
+                    "Hello, I am Xuwei. A calligraphy artist with a multicultural background. Having lived in Japan, I am now based in Paris."
                 </p>
                 
-                <br>
                 <a href="#contact" onclick="goToContact()" style="font-size: 0.8rem; text-transform: uppercase; color: #1a1a1a; text-decoration: none; border-bottom: 1px solid #1a1a1a; cursor: pointer;">Me Contacter &rarr;</a>
             </div>
         </section>
@@ -287,15 +282,15 @@
                 <h2>Contact</h2>
                 <p>Disponible pour collaborations artistiques.<br>Available for commissions.</p>
                 
-                <a href="mailto:xuweizhu2023@gmail.com" class="btn">xuweizhu2023@gmail.com</a>
+                <a href="mailto:xuweizhu2023@gmail.com" class="btn">Email Me</a>
                 <br><br>
                 <a href="https://www.linkedin.com/in/xuweizhu/" target="_blank" style="color: #0e76a8; text-decoration: none; font-size: 0.9rem;">
                     LinkedIn Profile
                 </a>
             </div>
         </section>
-
-        <div style="width: 10vw; flex-shrink: 0;"></div>
+        
+        <div style="width: 50px; flex-shrink: 0;"></div>
 
     </div>
 
@@ -307,10 +302,29 @@
         const ease = 0.08; 
         let maxScroll = container.scrollWidth - window.innerWidth;
 
+        // Met à jour la limite max au redimensionnement
         window.addEventListener('resize', () => {
             maxScroll = container.scrollWidth - window.innerWidth;
         });
 
+        // Fonction pour le bouton contact (Compatible Mobile & Desktop)
+        function goToContact() {
+            const contactSection = document.getElementById('contact').closest('.panel');
+            
+            // Si on est sur mobile, on utilise le scroll natif
+            if (window.innerWidth <= 768) {
+                contactSection.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'center' });
+            } else {
+                // Desktop custom scroll
+                targetScroll = maxScroll; 
+                if (!isAnimating) {
+                    isAnimating = true;
+                    requestAnimationFrame(animateScroll);
+                }
+            }
+        }
+
+        // Écouteur Molette (Seulement Desktop)
         window.addEventListener('wheel', (e) => {
             if (window.innerWidth > 768) {
                 e.preventDefault();
@@ -330,18 +344,6 @@
                 requestAnimationFrame(animateScroll);
             } else {
                 isAnimating = false;
-            }
-        }
-
-        function goToContact() {
-            if (window.innerWidth > 768) {
-                targetScroll = maxScroll; 
-                if (!isAnimating) {
-                    isAnimating = true;
-                    requestAnimationFrame(animateScroll);
-                }
-            } else {
-                document.getElementById('contact').scrollIntoView({behavior: 'smooth'});
             }
         }
     </script>
