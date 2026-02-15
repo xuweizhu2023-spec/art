@@ -34,7 +34,7 @@
             content: "";
             position: absolute;
             top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0, 0, 0, 0.25); /* Un peu plus sombre pour lisibilité */
+            background: rgba(0, 0, 0, 0.25);
             pointer-events: none; 
             z-index: -1;
         }
@@ -47,15 +47,14 @@
             overflow-y: hidden; 
             height: 100%;
             width: 100%;
-            scroll-snap-type: x mandatory; /* Magnétisme activé partout pour stabilité */
+            scroll-snap-type: x mandatory; 
             -webkit-overflow-scrolling: touch; 
         }
 
-        /* Cacher la barre de scroll */
         .main-container::-webkit-scrollbar { display: none; }
         .main-container { -ms-overflow-style: none; scrollbar-width: none; }
 
-        /* --- PANELS (LES CADRES BLANCS) --- */
+        /* --- PANELS (LES CADRES) --- */
         .panel {
             flex-shrink: 0; 
             display: flex;
@@ -68,7 +67,7 @@
             box-shadow: 0 10px 30px rgba(0,0,0,0.3);
             border-radius: 4px; 
             border: 1px solid rgba(255,255,255,0.2);
-            scroll-snap-align: center; /* Chaque panneau se cale au centre */
+            scroll-snap-align: center;
         }
 
         /* --- VERSION ORDI (DESKTOP) --- */
@@ -82,12 +81,21 @@
             .panel.intro { width: 45vw; max-width: 600px; margin-left: 5vw; }
             .panel.wide { width: 75vw; max-width: 1200px; }
             .panel.contact-section { width: 40vw; margin-right: 5vw; }
-            
-            /* Désactiver le snap natif sur PC car on a le script fluide */
             .main-container { scroll-snap-type: none; } 
+            
+            .gallery-grid {
+                flex-direction: row; 
+                overflow-x: auto; 
+                overflow-y: hidden;
+            }
+            .art-card {
+                height: 100%; 
+                max-height: 70vh;
+                width: auto; /* Largeur auto sur PC */
+            }
         }
 
-        /* --- VERSION MOBILE (Correction ici) --- */
+        /* --- VERSION MOBILE (MODIFIÉE) --- */
         @media (max-width: 768px) {
             .main-container {
                 padding-left: 15px;
@@ -95,29 +103,43 @@
             }
 
             .panel {
-                width: 90vw;  /* Plus large pour avoir de la place */
-                height: 75vh; /* Plus haut pour les images verticales */
+                width: 90vw;
+                height: 80vh; /* Un peu plus grand */
                 margin-right: 15px; 
                 padding: 20px;
+                
+                /* On autorise le scroll VERTICAL à l'intérieur du panneau si le texte/images dépassent */
+                overflow-y: auto; 
+                justify-content: flex-start; /* On aligne en haut pour scroller */
             }
             
-            /* On force la grille à prendre toute la hauteur dispo */
+            /* Grille en colonne : les images s'empilent */
             .gallery-grid {
-                height: 100% !important; 
-                align-items: center;
+                flex-direction: column !important; 
+                height: auto !important; 
+                overflow-y: visible;
+                gap: 30px; /* Espace entre les images */
+                padding-bottom: 20px;
             }
 
-            /* Chaque carte prend 100% de la largeur du panneau */
-            /* Comme ça l'image a toute la place pour s'afficher */
             .art-card {
-                min-width: 100%; 
-                height: 100%;
-                margin: 0;
-                scroll-snap-align: center;
+                width: 100%; 
+                height: auto; /* Hauteur libre */
+                max-height: none;
+                flex: 0 0 auto; /* Ne pas rétrécir */
             }
 
-            h1 { font-size: 2rem; }
+            /* Image visible en entier */
+            .art-card img {
+                max-height: 400px; /* Limite raisonnable */
+                height: auto;
+            }
+            
+            h1 { font-size: 2rem; margin-top: 10px; }
             p { font-size: 0.9rem; }
+            
+            /* Ajustement pour que le texte soit bien visible */
+            .caption { height: auto; padding: 10px 0; }
         }
 
         /* --- TYPO --- */
@@ -130,26 +152,18 @@
 
         .intro-content { width: 100%; margin: 0 auto; }
 
-        /* --- GALERIE --- */
+        /* --- GALERIE (Base) --- */
         .gallery-grid {
             display: flex;
             gap: 20px;
             flex: 1; 
             align-items: center;
-            justify-content: center; /* Centre les images sur PC */
+            justify-content: center;
             width: 100%;
             height: 100%;
-            overflow-x: auto; /* Scroll horizontal DANS le panneau si besoin */
-            overflow-y: hidden;
-            
-            /* Snap pour les images à l'intérieur du panneau sur mobile */
-            scroll-snap-type: x mandatory; 
         }
         
         .art-card {
-            flex: 0 1 auto; 
-            height: 100%; 
-            max-height: 70vh; /* Limite hauteur max */
             background: #fff;
             padding: 10px;
             box-shadow: 0 4px 10px rgba(0,0,0,0.05);
@@ -158,22 +172,15 @@
             justify-content: space-between;
         }
 
-        /* --- LA CORRECTION MAGIQUE POUR LES IMAGES --- */
         .art-card img {
             width: 100%;       
-            height: 100%;      /* Prend toute la hauteur dispo dans la carte */
-            max-height: 82%;   /* Laisse 18% pour le texte en bas */
-            
-            /* C'EST ICI QUE TOUT SE JOUE : */
-            object-fit: contain; /* Affiche TOUTE l'image sans jamais couper */
+            object-fit: contain; 
             object-position: center;
-            
             display: block;
             pointer-events: none;
         }
         
         .caption {
-            height: 18%; /* Espace réservé au texte */
             display: flex;
             align-items: center;
             justify-content: center;
@@ -203,6 +210,17 @@
             font-size: 0.9rem;
         }
 
+        /* --- PHRASE DISPONIBLE EN FRANCE --- */
+        .dispo-text {
+            color: #8c2a2a;
+            font-weight: bold;
+            border-left: 3px solid #8c2a2a;
+            padding-left: 10px;
+            margin-top: 10px;
+            font-family: 'Helvetica Neue', sans-serif;
+            font-size: 0.95rem;
+        }
+
     </style>
 </head>
 <body>
@@ -217,12 +235,14 @@
                 
                 <p class="fr">
                     <strong>Bonjour, je suis Xuwei.</strong><br>
-                    Artiste calligraphe riche d'une double influence culturelle. Après avoir vécu au Japon, je suis désormais installée à Paris.
+                    Artiste calligraphe riche d'une double influence culturelle. Après avoir vécu au Japon, je suis désormais installée à Paris. Pratiquant la calligraphie depuis 9 ans, je suis disponible pour événements & créations artistiques en France.
                 </p>
 
                 <p class="en">
-                    "Hello, I am Xuwei. A calligraphy artist with a multicultural background. Having lived in Japan, I am now based in Paris."
+                    "Hello, I am Xuwei. A calligraphy artist with a multicultural background. Having lived in Japan, I am now based in Paris. Practicing calligraphy for 9 years, I am available for artistic events and creations in France."
                 </p>
+                
+                <br>
                 
                 <a href="#contact" onclick="goToContact()" style="font-size: 0.8rem; text-transform: uppercase; color: #1a1a1a; text-decoration: none; border-bottom: 1px solid #1a1a1a; cursor: pointer;">Me Contacter &rarr;</a>
             </div>
@@ -232,7 +252,7 @@
             <h2>Œuvres / Works</h2>
             <div class="gallery-grid">
                 
-                <div class="art-card">
+<div class="art-card">
                     <img src="IMG_5678.JPEG" alt="Poème sur l'ascension">
                     <div class="caption">
                         <h3>Ascension</h3>
@@ -269,7 +289,7 @@
                         <h3>Printemps</h3>
                         <span>Encre deux couleurs</span>
                     </div>
-                </div>        
+                </div>
 
             </div>
         </section>
