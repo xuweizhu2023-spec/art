@@ -83,15 +83,33 @@
             .panel.contact-section { width: 40vw; margin-right: 5vw; }
             .main-container { scroll-snap-type: none; } 
             
-            .gallery-grid {
+           .gallery-grid {
                 flex-direction: row; 
                 overflow-x: auto; 
                 overflow-y: hidden;
             }
+            
             .art-card {
                 height: 100%; 
-                max-height: 70vh;
-                width: auto; /* Largeur auto sur PC */
+                max-height: 70vh; /* La carte reste contenue dans le panneau */
+                width: auto;
+                display: flex;
+                flex-direction: column;
+                justify-content: space-between;
+            }
+
+            /* --- CORRECTION POUR AFFICHER LE TEXTE SUR ORDI --- */
+            .art-card img {
+                height: 85%;       /* L'image ne prend que 85% de la hauteur */
+                max-height: 85%;   /* On force cette limite */
+                width: auto;       /* La largeur s'adapte */
+                object-fit: contain; 
+            }
+            
+            .caption {
+                height: 15%;       /* On réserve 15% pour le texte */
+                min-height: 50px;  /* Minimum vital pour le texte */
+                justify-content: center;
             }
         }
 
@@ -296,21 +314,21 @@
 
         <section class="panel wide">
             <h2>Performance live / Live calligraphy moments</h2>
-            <div class="gallery-grid">
-                
-                <div class="art-card">
-                    <img src="8ee6da157491f86d8f07b1425b3d1d09.JPEG" alt="Duo de parchemins">
-                    <div class="caption">
-                        <h3>Symbole de bonheur</h3>
-                        <span>Porte-bonheur pour le Nouvel An</span>
-                    </div>
-                </div>
+            <div class="gallery-grid">                
 
                 <div class="art-card">
                     <img src="5ea5fcf1ca9a1033a4f35a617b570366.JPEG" alt="Détail calligraphie">
                     <div class="caption">
                         <h3>Marque-pages personnalisés</h3>
                         <span>Création de marque-pages en direct</span>
+                    </div>
+                </div>
+
+              <div class="art-card">
+                    <img src="8ee6da157491f86d8f07b1425b3d1d09.JPEG" alt="Duo de parchemins">
+                    <div class="caption">
+                        <h3>Symbole de bonheur</h3>
+                        <span>Porte-bonheur pour le Nouvel An</span>
                     </div>
                 </div>
 
