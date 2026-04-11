@@ -103,9 +103,14 @@
                 width: auto;
                 display: flex;
                 flex-direction: column;
-                justify-content: space-between;
+                justify-content: flex-start; 
+                background: #f4f1ea;
+                padding: 10px;
+                box-shadow: 0 4px 10px rgba(0,0,0,0.05);
             }
-
+            .art-card img, .art-card video {
+                margin-bottom: 15px !important;
+            }
             /* --- CORRECTION POUR AFFICHER LE TEXTE SUR ORDI --- */
                 .art-card img, .art-card video { 
                 width: 100%; 
@@ -135,6 +140,13 @@
             }
             }
 
+            .caption { 
+                height: auto; 
+                padding: 10px 0; 
+                /* AJOUT ICI : Espace entre l'image/vidéo et le texte */
+                margin-top: 15px !important; 
+            }
+            
             .panel {
                 width: 90vw;
                 height: 80vh; /* Un peu plus grand */
@@ -180,7 +192,7 @@
         h1 { margin-bottom: 0.5rem; color: #000; font-size: 3rem; 
         /* C'EST ICI : Ajout d'un contour noir de 1.5 pixel pour rendre la police plus grasse */
         -webkit-text-stroke: 0.25px black; }
-        h2 { font-size: 1.2rem; color: #8c2a2a; margin-bottom: 1rem; text-transform: uppercase; letter-spacing: 2px; border-bottom: 2px solid #8c2a2a; display: inline-block; padding-bottom: 5px; }
+        h2 { font-size: 1.2rem; color: #8c2a2a; margin-bottom: 1rem; text-transform: uppercase; letter-spacing: 3px; border-bottom: 1px solid #8c2a2a; display: inline-block; padding-bottom: 2px; }
         
         p.fr { font-family: 'Indie Flower', cursive; font-size: 1rem; color: #222; margin-bottom: 1rem; line-height: 1.5; /* C'EST ICI : Aligne le texte proprement des deux côtés */ text-align: justify;}
         p.en { font-family: 'Indie Flower', cursive; font-style: italic; color: #666; margin-bottom: 1rem; }
